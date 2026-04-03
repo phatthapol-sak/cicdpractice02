@@ -1,4 +1,4 @@
-name: Deploy ON push
+name: Check If Code Build
 
 on:
   push:
