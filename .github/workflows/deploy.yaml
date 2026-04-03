@@ -1,0 +1,47 @@
+name: Deploy ON push
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone Codebase
+        uses: actions/checkout@v6
+
+      - name: Check If file Exist
+        run: |
+            ls -la
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Install Dependencies
+        run: npm install
+        
+      - name: Build Project
+        run: npm run build 
+
+      - name: Health Check
+        run: echo "Health Check Passed!"
+
+      - name : Upload Artifacts for Deployment
+        uses: actions/upload-artifact@v3
+        with:
+          path: ./out
+
+deploy:
+    environment:
+      name: production
+      url: ${{ steps.deploy.outputs.page_url }}
+      runs-on: ubuntu-latest
+      needs: check
+      steps:
+        - name: Deploy to GitHub Pages
+          id: deployment
+          uses: actions/deploy-pages@v4
